@@ -1,6 +1,5 @@
 import os
-
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import relationship, declarative_base, sessionmaker
 from sqlalchemy import (create_engine, MetaData, Table,
                         Column, Integer, String, select, insert, update,
                         DateTime, func, Boolean, ForeignKey,
@@ -10,7 +9,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 DATABASE_PATH = os.path.join(BASE_DIR, 'sqlite.db')
 DATABASE_URL = os.path.join(f'sqlite:///{DATABASE_PATH}')
 engine = create_engine(DATABASE_URL, echo=False)
-
+SessionLocal = sessionmaker(bind=engine)
+session = SessionLocal()
 Base = declarative_base()
 meta = MetaData()
 
@@ -108,11 +108,26 @@ class UserAnswer(Base):
 
 if __name__ == '__main__':
     Base.metadata.create_all(bind=engine)
-
+    categories = session.query(Category)
+    for category in categories:
+        print(category.name, end=' -> ')
+        for subcategory in category.subcategories:
+            print(f"{subcategory.name}")
+            for quiz_index, quiz in enumerate(subcategory.quizzes, start=1):
+                print(f"    {quiz_index}-savol: {quiz.text}")
+                option = quiz.options
+                variants = ['a', 'b', 'c', 'd']
+                options = zip(variants, option)
+                for abc, option in options:
+                    print(f"        {abc}) {option.text}{f'{option.is_correct}'.rjust(15, '-')}")
+    # with SessionLocal() as session:
+    #     try:
+    #         for i in range(1, 12):
+    #             new_data = SubCategory(category_id=3, name=f"{i}-sinf")
+    #             session.add(new_data)
     #
-    # user = Table('user', meta,
-    #              Column('chat_id', Integer, primary_key=True),
-    #              Column('fullname', String),
-    #              Column('username', String),
-    #              Column('phone', String),
-    #              Column('lang', String))
+    #         session.commit()
+    #
+    #     except Exception as e:
+    #         session.rollback()
+    #         print(f"Xatolik yuz berdi: {e}")
