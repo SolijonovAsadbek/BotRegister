@@ -7,9 +7,10 @@ from aiogram.types import CallbackQuery
 from random import sample, shuffle
 
 from handlers.menu import educational_test
-from keyboards.inline.button import keyboard_builder, keyboards_test, btn_confirm, btn_one_confirm
+from keyboards.inline.button import keyboard_builder, btn_confirm, btn_one_confirm
 from states import QuizState
 from utils.db.db_sqlalchemy import BASE_DIR
+from utils.helper.user_helper import get_categories
 
 quiz_router = Router()
 
@@ -55,7 +56,7 @@ async def send_question(call: CallbackQuery, state: FSMContext, index: int, scor
     await state.set_state(QuizState.quession)
 
 
-@quiz_router.callback_query(lambda call: call.data in [c for d, c in keyboards_test])
+@quiz_router.callback_query(lambda call: call.data in [d for d, c in get_categories()])
 async def start_quiz(call: CallbackQuery, state: FSMContext):
     if quizs := await load_quizs(call.data):
         await state.set_state(QuizState.confirm)

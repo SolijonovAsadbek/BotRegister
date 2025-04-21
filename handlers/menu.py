@@ -5,7 +5,8 @@ from aiogram.types import Message, CallbackQuery
 from telegraph import Telegraph
 
 from handlers.start import choose_language
-from keyboards.inline.button import btn_tests
+from keyboards.inline.button import keyboard_builder
+from utils.helper.user_helper import get_categories
 
 menu_router = Router()
 tg = Telegraph()
@@ -36,15 +37,16 @@ async def educational_course(message: Message):
 @menu_router.message(F.text == '🧑‍💻 Testlar')
 async def educational_test(message: Union[Message, CallbackQuery]):
     tg.create_account(short_name='1337')
-
+    test_categories = keyboard_builder(get_categories(), (2,))
     response = tg.create_page(
         'Assalomu alaykum!',
         html_content='<p>🧑‍💻 Testlar</p>'
     )
     if isinstance(message, Message):
-        await message.answer(text=f"<a href=\"{response['url']}\">👨‍🏫 Testlar</a>", reply_markup=btn_tests)
+        await message.answer(text=f"<a href=\"{response['url']}\">👨‍🏫 Testlar</a>", reply_markup=test_categories)
     elif isinstance(message, CallbackQuery):
-        await message.message.edit_text(text=f"<a href=\"{response['url']}\">👨‍🏫 Testlar</a>", reply_markup=btn_tests)
+        await message.message.edit_text(text=f"<a href=\"{response['url']}\">👨‍🏫 Testlar</a>",
+                                        reply_markup=test_categories)
 
 
 @menu_router.message(F.text == '📊 Statistika')
