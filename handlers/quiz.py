@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 from random import sample, shuffle
 
-from handlers.menu import educational_test
+from handlers.quiz_handler import show_categories
 from keyboards.inline.button import keyboard_builder, btn_confirm, btn_one_confirm
 from states import QuizState
 from utils.db.db_sqlalchemy import BASE_DIR
@@ -94,4 +94,4 @@ async def confirm(call: CallbackQuery, state: FSMContext):
         await send_question(call, state, 0, 0, quizs)
     else:
         await state.clear()
-        await educational_test(call)
+        await show_categories(call)

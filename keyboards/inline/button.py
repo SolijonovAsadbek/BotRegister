@@ -3,7 +3,7 @@ from typing import List
 
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from utils.helper.user_helper import get_categories
+from handlers.callback_data import NavigationCallback
 
 
 def keyboard_builder(keyboards: List, adjust: tuple):
@@ -25,12 +25,29 @@ btn_confirm = keyboard_builder(keyboards_confirm, (2,))
 btn_one_confirm = keyboard_builder(keyboards_one_confirm, (1,))
 
 
-def nested_keyboard_builder(data, cb_class, adjust, extra_data=None, back=None):
-    kb = InlineKeyboardBuilder()
-    for id, data in data:
-        kwargs = {'id': id}
-        if extra_data:
-            kwargs.update(extra_data)
-        callback = cb_class(**kwargs)
-        kb.button(text=data, callback_data=callback.pack())
-    kd.adjust()
+def navigation_keyboard(items: list[tuple[str, int]], level: str, **ids):
+    builder = InlineKeyboardBuilder()
+
+    for title, item_id in items:
+        cb_data = NavigationCallback(level=level, **ids, **{
+            f"{level}_id": item_id
+        }).pack()
+        builder.button(text=title, callback_data=cb_data)
+
+    # Ortga tugmasi
+    if level != "category":
+        back_level = {
+            "subcategory": "category",
+            "quiz": "subcategory",
+            "option": "quiz"
+        }[level]
+
+        # Orqaga tugmasini har doim yangi callback_data bilan yaratish
+        cb_back = NavigationCallback(level=back_level, **ids).pack()
+
+        # Orqaga tugmasi bo'lsa, uni yaratish
+        builder.button(text="⬅️ Ortga", callback_data=cb_back)
+
+    builder.adjust(2)
+    return builder.as_markup()
+

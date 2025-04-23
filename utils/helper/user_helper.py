@@ -33,28 +33,35 @@ async def followers_count():
     return users_count
 
 
+async def get_categories_async():
+    with engine.connect() as conn:
+        query = select(Category.name, Category.id)
+        datas = conn.execute(query).fetchall()
+    return datas
+
+
 def get_categories():
     with engine.connect() as conn:
-        query = select(Category.id, Category.name)
+        query = select(Category.name, Category.id)
         datas = conn.execute(query).fetchall()
     return datas
 
 
-def get_subcategories(cat_id):
+async def get_subcategories(cat_id):
     with engine.connect() as conn:
-        query = select(SubCategory.id, SubCategory.name).where(SubCategory.category_id == cat_id)
+        query = select(SubCategory.name, SubCategory.id).where(SubCategory.category_id == cat_id)
         datas = conn.execute(query).fetchall()
     return datas
 
 
-def get_quizzes(sub_id):
+async def get_quizzes(sub_id):
     with engine.connect() as conn:
-        query = select(Quiz.id, Quiz.text).where(Quiz.subcategory_id == sub_id)
+        query = select(Quiz.text, Quiz.id).where(Quiz.subcategory_id == sub_id)
         datas = conn.execute(query).fetchall()
     return datas
 
 
-def get_options(quiz_id):
+async def get_options(quiz_id):
     with engine.connect() as conn:
         query = select(Option.text, Option.is_correct).where(Option.quiz_id == quiz_id)
         datas = conn.execute(query).fetchall()
@@ -62,16 +69,16 @@ def get_options(quiz_id):
 
 
 if __name__ == '__main__':
-    categories = asyncio.run(get_categories())
+    categories = get_categories()
     print(categories)
     for cat_id, cat_name in categories:
         print(cat_name)
-        subcateories = asyncio.run(get_subcategories(cat_id))
+        subcateories = get_subcategories(cat_id)
         for sub_id, sub_name in subcateories:
             print(sub_name)
-            quizzes = asyncio.run(get_quizzes(sub_id))
+            quizzes = get_quizzes(sub_id)
             for q_id, q_text in quizzes:
                 print(q_text)
-                options = asyncio.run(get_options(q_id))
+                options = get_options(q_id)
                 for option, is_correct in options:
                     print(f"{option:.<30}{is_correct}")
