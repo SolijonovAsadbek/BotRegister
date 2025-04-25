@@ -20,10 +20,9 @@ async def main() -> None:
     bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
     dp.include_routers(handlers.start_router,
+                       handlers.router,
                        handlers.register_router,
-                       handlers.menu_router,
-                       handlers.quiz_router,
-                       handlers.quiz_handler)
+                       handlers.menu_router)
 
     await dp.start_polling(bot)
 

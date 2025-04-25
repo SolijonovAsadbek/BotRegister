@@ -47,21 +47,28 @@ def get_categories():
     return datas
 
 
-async def get_subcategories(cat_id):
+def get_subcategories(cat_id):
     with engine.connect() as conn:
         query = select(SubCategory.name, SubCategory.id).where(SubCategory.category_id == cat_id)
         datas = conn.execute(query).fetchall()
     return datas
 
 
-async def get_quizzes(sub_id):
+def get_quizzes(sub_id):
     with engine.connect() as conn:
         query = select(Quiz.text, Quiz.id).where(Quiz.subcategory_id == sub_id)
         datas = conn.execute(query).fetchall()
     return datas
 
 
-async def get_options(quiz_id):
+def get_question_text(quiz_id):
+    with engine.connect() as conn:
+        query = select(Quiz.text).where(Quiz.id == quiz_id)
+        result = conn.execute(query).fetchone()
+        return result[0] if result else None
+
+
+def get_options(quiz_id):
     with engine.connect() as conn:
         query = select(Option.text, Option.is_correct).where(Option.quiz_id == quiz_id)
         datas = conn.execute(query).fetchall()
