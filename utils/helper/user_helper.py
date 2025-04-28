@@ -68,10 +68,15 @@ def get_question_text(quiz_id):
         return result[0] if result else None
 
 
-def get_options(quiz_id):
+# new
+def get_options(quiz_id, option_id=None):
     with engine.connect() as conn:
-        query = select(Option.text, Option.is_correct).where(Option.quiz_id == quiz_id)
-        datas = conn.execute(query).fetchall()
+        if option_id:
+            stmt = select(Option.text, Option.is_correct).where(Option.quiz_id == quiz_id, Option.id == option_id)
+            datas = conn.execute(stmt).fetchone()
+        else:
+            stmt = select(Option.text, Option.id).where(Option.quiz_id == quiz_id)
+            datas = conn.execute(stmt).fetchall()
     return datas
 
 

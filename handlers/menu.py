@@ -1,7 +1,7 @@
 from typing import Union
 
 from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message
 from telegraph import Telegraph
 
 from handlers.start import choose_language

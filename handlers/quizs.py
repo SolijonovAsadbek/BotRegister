@@ -1,3 +1,5 @@
+import random  # new
+
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
@@ -40,6 +42,7 @@ async def show_subcategories(callback: CallbackQuery, callback_data: CategoryCal
 @router.callback_query(SubcategoryCallback.filter())
 async def show_quiz_start(callback: CallbackQuery, callback_data: SubcategoryCallback):
     quizzes = get_quizzes(callback_data.id)
+    quizzes = random.sample(quizzes, min(5, len(quizzes)))  # new
     if not quizzes:
         builder = InlineKeyboardBuilder()
         builder.button(
@@ -106,13 +109,14 @@ async def show_question(callback: CallbackQuery, callback_data: QuizCallback):
 
     question_text = get_question_text(callback_data.id)
     options = get_options(callback_data.id)
+    options = random.sample(options, min(4, len(options)))  # new
 
     builder = InlineKeyboardBuilder()
-    for i, (text, _) in enumerate(options):
+    for text, option_id in options:  # new
         builder.button(
             text=text,
             callback_data=OptionCallback(
-                id=i,
+                id=option_id,  # new
                 quiz=callback_data.id,
                 subcategory=callback_data.subcategory,
                 category=callback_data.category
@@ -159,8 +163,7 @@ async def process_answer(callback: CallbackQuery, callback_data: OptionCallback)
     quiz_id = quizzes[current_index][1]
 
     # Javobni tekshirish
-    options = get_options(quiz_id)
-    selected_option = options[callback_data.id]
+    selected_option = get_options(quiz_id, callback_data.id)  # new
     is_correct = selected_option[1]
 
     # Javobni saqlash

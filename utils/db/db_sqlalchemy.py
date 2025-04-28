@@ -1,8 +1,8 @@
 import asyncio
 import os
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
-from sqlalchemy import (create_engine, MetaData, Table,
-                        Column, Integer, String, select, insert, update,
+from sqlalchemy import (create_engine, MetaData,
+                        Column, Integer, String,
                         DateTime, func, Boolean, ForeignKey,
                         UniqueConstraint)
 
@@ -125,50 +125,6 @@ def show_quizs():
                     print(f"        {abc}) {option.text:.<30}{f'{option.is_correct}'}")
 
 
-def write_quizs():
-    with SessionLocal() as session:
-        try:
-            for i in range(1, 12):
-                new_data = SubCategory(category_id=3, name=f"{i}-sinf")
-                session.add(new_data)
-
-            session.commit()
-
-        except Exception as e:
-            session.rollback()
-            print(f"Xatolik yuz berdi: {e}")
-
-
-async def write_the_category_quizs(sub_category_id, category):
-    from handlers.quiz import load_quizs
-    quizs = await load_quizs(category)
-    with SessionLocal() as session:
-        for quiz in quizs:
-            new_data = Quiz(subcategory_id=3, text=quiz['question']['uz'], difficulty=1, is_active=True)
-            session.add(new_data)
-        session.commit()
-
-
-async def write_the_option_of_quizs(sub_category_id, category):
-    query = select(Quiz)
-    from handlers.quiz import load_quizs
-    quizzes = await load_quizs("➕ Matematika")
-    print(quizzes)
-    with SessionLocal() as session:
-        quizs = session.execute(query).scalars().all()
-        for quiz in quizs:
-            for jquiz in quizzes:
-                if quiz.text == jquiz['question']['uz']:
-                    answer = jquiz['answer']
-                    for option in jquiz['options']:
-                        w_answer = answer == option
-                        new_data = Option(quiz_id=quiz.id, text=option, is_correct=w_answer)
-                        session.add(new_data)
-        session.commit()
-
-
 if __name__ == '__main__':
     Base.metadata.create_all(bind=engine)
     show_quizs()
-    # asyncio.run(write_the_category_quizs(3, '🇺🇸 English'))
-    # asyncio.run(write_the_option_of_quizs(1, 1))
