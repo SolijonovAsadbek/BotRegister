@@ -2,7 +2,7 @@ import asyncio
 
 from sqlalchemy import select, insert, update
 
-from utils.db.db_sqlalchemy import engine, User, Category, SubCategory, Quiz, Option
+from utils.db.db_sqlalchemy import engine, User, Category, SubCategory, Quiz, Option, UserAnswer
 
 
 async def check_registration(chat_id):
@@ -78,6 +78,26 @@ def get_options(quiz_id, option_id=None):
             stmt = select(Option.text, Option.id).where(Option.quiz_id == quiz_id)
             datas = conn.execute(stmt).fetchall()
     return datas
+
+
+def save_answer(**kwargs):
+    print(kwargs)
+    try:
+        with engine.connect() as conn:
+            query = insert(UserAnswer).values(**kwargs)
+            print(query)
+            conn.execute(query)
+            conn.commit()
+
+    except Exception as e:
+        print(f'Error: {e}')
+
+
+def find_id_by_chat_id(chat_id):
+    with engine.connect() as conn:
+        query = select(User.id).where(User.chat_id == chat_id)
+        datas = conn.execute(query).fetchone()
+    return datas[0] if datas else []
 
 
 if __name__ == '__main__':

@@ -5,7 +5,8 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from handlers.callbacks import CategoryCallback, SubcategoryCallback, BackCallback, Level, QuizCallback, OptionCallback
-from utils.helper.user_helper import get_categories, get_subcategories, get_quizzes, get_options, get_question_text
+from utils.helper.user_helper import get_categories, get_subcategories, get_quizzes, get_options, get_question_text, \
+    save_answer, find_id_by_chat_id
 
 router = Router()
 
@@ -168,6 +169,8 @@ async def process_answer(callback: CallbackQuery, callback_data: OptionCallback)
 
     # Javobni saqlash
     quiz_data['user_answers'][quiz_id] = callback_data.id
+    user_id = find_id_by_chat_id(chat_id=user_id)
+    save_answer(user_id=user_id, quiz_id=quiz_id, option_id=callback_data.id)
     if is_correct:
         quiz_data['correct_answers'] += 1
 

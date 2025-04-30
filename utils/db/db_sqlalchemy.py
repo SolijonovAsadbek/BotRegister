@@ -97,7 +97,6 @@ class UserAnswer(Base):
     user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
     quiz_id = Column(Integer, ForeignKey('quiz.id'), nullable=False)
     option_id = Column(Integer, ForeignKey('option.id'), nullable=False)
-    is_correct = Column(Boolean, nullable=False)
     answered_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Bog'lanish
@@ -105,9 +104,9 @@ class UserAnswer(Base):
     quiz = relationship('Quiz', back_populates='user_answers')
     option = relationship('Option', back_populates='user_answers')
 
-    __table_args__ = (
-        UniqueConstraint('user_id', 'quiz_id', name='_user_quiz_uc'),
-    )
+    # __table_args__ = (
+    #     UniqueConstraint('user_id', 'quiz_id', name='_user_quiz_uc'),
+    # )
 
 
 def show_quizs():
