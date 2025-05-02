@@ -153,12 +153,12 @@ async def show_question(callback: CallbackQuery, callback_data: QuizCallback):
 
 @router.callback_query(OptionCallback.filter())
 async def process_answer(callback: CallbackQuery, callback_data: OptionCallback):
-    user_id = callback.from_user.id
-    if user_id not in user_quiz_data:
+    user_chat_id = callback.from_user.id
+    if user_chat_id not in user_quiz_data:
         await callback.message.edit_text("Xatolik yuz berdi. Iltimos, testni qayta boshlang.")
         return
 
-    quiz_data = user_quiz_data[user_id]
+    quiz_data = user_quiz_data[user_chat_id]
     quizzes = quiz_data['quizzes']
     current_index = quiz_data['current_index']
     quiz_id = quizzes[current_index][1]
@@ -169,7 +169,7 @@ async def process_answer(callback: CallbackQuery, callback_data: OptionCallback)
 
     # Javobni saqlash
     quiz_data['user_answers'][quiz_id] = callback_data.id
-    user_id = find_id_by_chat_id(chat_id=user_id)
+    user_id = find_id_by_chat_id(chat_id=user_chat_id)
     save_answer(user_id=user_id, quiz_id=quiz_id, option_id=callback_data.id)
     if is_correct:
         quiz_data['correct_answers'] += 1
@@ -210,7 +210,7 @@ async def process_answer(callback: CallbackQuery, callback_data: OptionCallback)
             reply_markup=builder.as_markup()
         )
         # Foydalanuvchi ma'lumotlarini tozalash
-        del user_quiz_data[user_id]
+        del user_quiz_data[user_chat_id]
 
 
 @router.callback_query(BackCallback.filter())

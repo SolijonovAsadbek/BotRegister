@@ -1,6 +1,6 @@
 import asyncio
 
-from sqlalchemy import select, insert, update
+from sqlalchemy import select, insert, update, text
 
 from utils.db.db_sqlalchemy import engine, User, Category, SubCategory, Quiz, Option, UserAnswer
 
@@ -98,6 +98,22 @@ def find_id_by_chat_id(chat_id):
         query = select(User.id).where(User.chat_id == chat_id)
         datas = conn.execute(query).fetchone()
     return datas[0] if datas else []
+
+
+def show_statistics():
+    with engine.connect() as conn:
+        query = text(
+            """SELECT
+    (SELECT user.fullname FROM user WHERE id=ua.user_id) AS user,
+    COUNT(*) FILTER (WHERE o.is_correct = 1) AS correct_answers,
+    COUNT(*) AS total_answers,
+    ROUND(COUNT(*) FILTER (WHERE o.is_correct = 1) * 100.0 / COUNT(*), 2) AS percent
+FROM user_answer ua
+    JOIN option o ON ua.option_id = o.id
+GROUP BY ua.user_id
+ORDER BY percent DESC, correct_answers DESC, total_answers DESC""")
+        datas = conn.execute(query).fetchall()
+        return datas
 
 
 if __name__ == '__main__':
