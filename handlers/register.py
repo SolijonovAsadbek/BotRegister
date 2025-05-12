@@ -46,5 +46,5 @@ async def save_fullname(message: Message, state: FSMContext):
     data = await state.get_data()
 
     await register(chat_id=chat_id, fullname=data['fullname'], username=data['username'], phone=phone, lang=data['lang'])
-    await message.answer('Quyidagi tugmalardan birini tanlang!', reply_markup=study_menu())
+    await message.answer('Quyidagi tugmalardan birini tanlang!', reply_markup=study_menu(chat_id))
     await state.clear()

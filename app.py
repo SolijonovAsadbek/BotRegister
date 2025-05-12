@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = getenv("BOT_TOKEN")
+ADMINS = getenv('ADMINS')
 
 dp = Dispatcher()
 

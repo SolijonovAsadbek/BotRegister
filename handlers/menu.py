@@ -1,11 +1,9 @@
-import io
-
-from aiogram import Router, F, types
-from aiogram.types import Message, BufferedInputFile
+from aiogram import Router, F
+from aiogram.types import Message, FSInputFile
 from telegraph import Telegraph
-from PIL import Image, ImageDraw, ImageFont
 
 from handlers.start import choose_language
+from keyboards.default.button import settings_kb, study_menu
 from utils.helper.user_helper import show_statistics
 
 menu_router = Router()
@@ -67,3 +65,20 @@ async def educational_statistics(message: Message):
 @menu_router.message(F.text == "🌐 Tilni o'zgartirish")
 async def again_choose_language(message: Message):
     await choose_language(message)
+
+
+@menu_router.message(F.text == '⬅️ Ortga')
+async def basic_menu(message: Message):
+    chat_id = message.chat.id
+    await message.answer('Quyidagilardan birini tanang', reply_markup=study_menu(chat_id))
+
+
+@menu_router.message(F.text == '⚙️ Sozlamalar')
+async def settings(message: Message):
+    await message.answer(text='Quyidagi birini tanlang.', reply_markup=settings_kb())
+
+
+@menu_router.message(F.text == 'Export')
+async def download_xls(message: Message):
+    document = FSInputFile('export.xlsx')
+    await message.answer_document(document=document, caption='Shablon')

@@ -1,20 +1,22 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
+
+from app import ADMINS
 
 
-def study_menu():
-    darslik = KeyboardButton(text='📚 Darsliklar')
-    kurslar = KeyboardButton(text='👨‍🏫 Kurslar')
-    test = KeyboardButton(text='🧑‍💻 Testlar')
-    statistika = KeyboardButton(text='📊 Statistika')
-    til_uzgartirish = KeyboardButton(text="🌐 Tilni o'zgartirish")
+def study_menu(chat_id):
+    keybords = ['📚 Darsliklar', '👨‍🏫 Kurslar', '🧑‍💻 Testlar', '📊 Statistika', "🌐 Tilni o'zgartirish"]
+    if chat_id == int(ADMINS):
+        keybords.append('⚙️ Sozlamalar')
 
-    btns = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[
-        [darslik, kurslar],
-        [test, statistika],
-        [til_uzgartirish]
-    ])
+    builder = ReplyKeyboardBuilder()
 
-    return btns
+    builder.add(
+        *[KeyboardButton(text=keyboard) for keyboard in keybords])
+
+    builder = builder.adjust(2)
+
+    return builder.as_markup(resize_keyboard=True)
 
 
 def share_contact():
@@ -25,3 +27,11 @@ def share_contact():
     ])
 
     return btn
+
+
+def settings_kb():
+    builder = ReplyKeyboardBuilder()
+    kbs = ['Export', 'Import', 'Yuklab olish', 'Joylash', '⬅️ Ortga']
+    builder.add(*[KeyboardButton(text=kb) for kb in kbs])
+    builder.adjust(2)
+    return builder.as_markup()

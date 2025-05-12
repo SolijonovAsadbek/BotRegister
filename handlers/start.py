@@ -1,7 +1,7 @@
 from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
-from aiogram import html, Router
+from aiogram import html, Router, F
 
 from keyboards.default.button import study_menu
 from keyboards.inline.button import btn_langs
@@ -19,7 +19,7 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
                          reply_markup=ReplyKeyboardRemove())
 
     if await check_registration(chat_id):
-        await message.answer('Quyidagi tugmalardan birini tanlang!', reply_markup=study_menu())
+        await message.answer('Quyidagi tugmalardan birini tanlang!', reply_markup=study_menu(chat_id))
     else:
         await choose_language(message)
         await state.set_state(RegisterState.lang)
