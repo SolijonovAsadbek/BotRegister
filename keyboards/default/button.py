@@ -31,7 +31,10 @@ def share_contact():
 
 def settings_kb():
     builder = ReplyKeyboardBuilder()
-    kbs = ['Export', 'Import', 'Yuklab olish', 'Joylash', '⬅️ Ortga']
+    kbs = ['Shablon', 'Savollarni yuklab olish', 'O`chirish', '⬅️ Ortga']
     builder.add(*[KeyboardButton(text=kb) for kb in kbs])
     builder.adjust(2)
     return builder.as_markup()
+
+
+

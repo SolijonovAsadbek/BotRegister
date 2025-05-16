@@ -2,7 +2,8 @@ import asyncio
 
 from sqlalchemy import select, insert, update, text
 
-from utils.db.db_sqlalchemy import engine, User, Category, SubCategory, Quiz, Option, UserAnswer
+from app import ADMINS
+from utils.db.db_sqlalchemy import sync_engine as engine, User, Category, SubCategory, Quiz, Option, UserAnswer, session
 
 
 async def check_registration(chat_id):
@@ -103,17 +104,24 @@ def find_id_by_chat_id(chat_id):
 def show_statistics():
     with engine.connect() as conn:
         query = text(
-            """SELECT
-    (SELECT user.fullname FROM user WHERE id=ua.user_id) AS user,
-    COUNT(*) FILTER (WHERE o.is_correct = 1) AS correct_answers,
-    COUNT(*) AS total_answers,
-    ROUND(COUNT(*) FILTER (WHERE o.is_correct = 1) * 100.0 / COUNT(*), 2) AS percent
+            """SELECT (SELECT u.fullname FROM users u WHERE u.id = ua.user_id)                 AS user,
+       COUNT(*) FILTER (WHERE o.is_correct = true)                              AS correct_answers,
+       COUNT(*)                                                                 AS total_answers,
+       ROUND(COUNT(*) FILTER (WHERE o.is_correct = true) * 100.0 / COUNT(*), 2) AS percent
 FROM user_answer ua
-    JOIN option o ON ua.option_id = o.id
+         JOIN option o ON ua.option_id = o.id
 GROUP BY ua.user_id
-ORDER BY percent DESC, correct_answers DESC, total_answers DESC""")
+ORDER BY percent DESC, correct_answers DESC, total_answers DESC;""")
         datas = conn.execute(query).fetchall()
         return datas
+
+
+def all_quizzes():
+    return session.query(Quiz).all()
+
+
+def is_admin(user_id: int) -> bool:
+    return str(user_id) in ADMINS
 
 
 if __name__ == '__main__':
@@ -130,3 +138,5 @@ if __name__ == '__main__':
                 options = get_options(q_id)
                 for option, is_correct in options:
                     print(f"{option:.<30}{is_correct}")
+    print(all_quizzes())
+    pass
