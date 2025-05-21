@@ -1,11 +1,9 @@
 import logging
-import os.path
 from io import BytesIO
 
 import sqlalchemy
 from aiogram import Router, F
-from aiogram.filters import Command
-from aiogram.types import Message, FSInputFile, BufferedInputFile, CallbackQuery
+from aiogram.types import Message, BufferedInputFile, CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from openpyxl.reader.excel import load_workbook
 from openpyxl.workbook import Workbook
